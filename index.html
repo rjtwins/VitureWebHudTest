@@ -140,9 +140,7 @@
         let speed;
 
         function initMap() {
-            map = L.map('minimap').setView([37.5665, 126.9780], 13); // Seoul
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; OpenStreetMap contributors',
+            map = L.map('minimap', {
                 maxZoom: 10,
                 zoomControl: false,
                 dragging: false,
@@ -151,6 +149,10 @@
                 boxZoom: false,
                 keyboard: false,
                 touchZoom: false
+            }).setView([37.5665, 126.9780], 13); // Seoul
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors',
             }).addTo(map);
 
             marker = L.marker([37.5665, 126.9780]).addTo(map);
