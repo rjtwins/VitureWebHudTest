@@ -168,6 +168,14 @@
             }
         }
 
+        addEventListener("keydown", (event) => 
+        { 
+            if(event.key == "Add")
+                zoomPlus();
+            if(event.key == "Subtract")
+                zoomMin();
+        });
+
         let currentVW = 100;
         let currentVH = 100;
         function zoomPlus(){
