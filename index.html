@@ -18,9 +18,9 @@
     </style>
     <script src="https://code.jquery.com/jquery-4.0.0.min.js" integrity="sha256-OaVG6prZf4v69dPg6PhVattBXkcOWQB62pdZ3ORyrao=" crossorigin="anonymous"></script>
     <script src="face-api.js"></script>
-    <!-- <script async
+    <script async
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA8jaLVHD7YmvXLttNOiQCd-xFbI8esg4w&callback=initMap">
-    </script> -->
+    </script>
     <script>
         const mtcnnForwardParams = {
             // // number of scaled versions of the input image passed through the CNN
@@ -59,24 +59,24 @@
         });
 
         async function start(){
-            //console.log(faceapi.nets)
+            console.log(faceapi.nets)
 
-            // await faceapi.loadFaceExpressionModel(MODEL_URL);
-            // await faceapi.loadFaceLandmarkModel(MODEL_URL);
-            // await faceapi.loadFaceLandmarkTinyModel(MODEL_URL);
-            // await faceapi.loadFaceRecognitionModel(MODEL_URL);
-            // await faceapi.loadMtcnnModel(MODEL_URL);
-            // await faceapi.loadSsdMobilenetv1Model(MODEL_URL);
-            // await faceapi.loadTinyFaceDetectorModel(MODEL_URL);
+            await faceapi.loadFaceExpressionModel(MODEL_URL);
+            await faceapi.loadFaceLandmarkModel(MODEL_URL);
+            await faceapi.loadFaceLandmarkTinyModel(MODEL_URL);
+            await faceapi.loadFaceRecognitionModel(MODEL_URL);
+            await faceapi.loadMtcnnModel(MODEL_URL);
+            await faceapi.loadSsdMobilenetv1Model(MODEL_URL);
+            await faceapi.loadTinyFaceDetectorModel(MODEL_URL);
 
             canvas = document.getElementById('overlay');
             videoEl = document.getElementById('inputVideo');
 
-            // navigator.getUserMedia(
-            //     { video: {} },
-            //     stream => videoEl.srcObject = stream,
-            //     err => console.error(err)
-            // )
+            navigator.getUserMedia(
+                { video: {} },
+                stream => videoEl.srcObject = stream,
+                err => console.error(err)
+            )
 
             setInterval(() => updateLocation(), 1000);
         }
@@ -154,22 +154,22 @@
         let speed;
 
         function initMap() {
-            // map = new google.maps.Map(document.getElementById("minimap"), {
-            //     location: { lat: 37.7749, lng: -122.4194 }, // default to San Francisco
-            //     zoom: 14,
+            map = new google.maps.Map(document.getElementById("minimap"), {
+                location: { lat: 37.7749, lng: -122.4194 }, // default to San Francisco
+                zoom: 14,
 
-            //     disableDefaultUI: true,      // clean minimap look
-            //     gestureHandling: "none",     // disable interaction
-            //     zoomControl: false,
-            //     streetViewControl: false,
-            //     mapTypeControl: false,
-            //     fullscreenControl: false
-            // });
+                disableDefaultUI: true,      // clean minimap look
+                gestureHandling: "none",     // disable interaction
+                zoomControl: false,
+                streetViewControl: false,
+                mapTypeControl: false,
+                fullscreenControl: false
+            });
 
-            // marker = new google.maps.Marker({
-            //     position: { lat: 37.7749, lng: -122.4194 },
-            //     map: map,
-            // });
+            marker = new google.maps.Marker({
+                position: { lat: 37.7749, lng: -122.4194 },
+                map: map,
+            });
 
             setInterval(() => updateLocation(), 1000);
         }
