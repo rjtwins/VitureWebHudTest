@@ -1,0 +1,233 @@
+<head>
+    <style>
+        #minimap {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+
+            width: 300px;
+            height: 200px;
+
+            border: 2px solid white;
+            border-radius: 12px;
+            overflow: hidden;
+
+            box-shadow: 0 0 15px rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-4.0.0.min.js" integrity="sha256-OaVG6prZf4v69dPg6PhVattBXkcOWQB62pdZ3ORyrao=" crossorigin="anonymous"></script>
+    <script src="face-api.js"></script>
+    <!-- <script async
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA8jaLVHD7YmvXLttNOiQCd-xFbI8esg4w&callback=initMap">
+    </script> -->
+    <script>
+        const mtcnnForwardParams = {
+            // // number of scaled versions of the input image passed through the CNN
+            // // of the first stage, lower numbers will result in lower inference time,
+            // // but will also be less accurate
+            // maxNumScales: 10,
+            // // scale factor used to calculate the scale steps of the image
+            // // pyramid used in stage 1
+            // scaleFactor: 0.709,
+            // // the score threshold values used to filter the bounding
+            // // boxes of stage 1, 2 and 3
+            // scoreThresholds: [0.6, 0.7, 0.7],
+            // // mininum face size to expect, the higher the faster processing will be,
+            // // but smaller faces won't be detected
+            minFaceSize: 200
+        }
+
+        let videoEl;
+        let canvas;
+
+        const MODEL_URL = '/models';
+
+        $(document).ready(function() {
+            start();
+            updateTime();
+        });
+
+
+        window.addEventListener("deviceorientationabsolute", (event) => {
+            console.log(event); // compass direction in degrees
+        });
+
+
+        window.addEventListener("deviceorientation", (event) => {
+            console.log(event);
+        });
+
+        async function start(){
+            //console.log(faceapi.nets)
+
+            // await faceapi.loadFaceExpressionModel(MODEL_URL);
+            // await faceapi.loadFaceLandmarkModel(MODEL_URL);
+            // await faceapi.loadFaceLandmarkTinyModel(MODEL_URL);
+            // await faceapi.loadFaceRecognitionModel(MODEL_URL);
+            // await faceapi.loadMtcnnModel(MODEL_URL);
+            // await faceapi.loadSsdMobilenetv1Model(MODEL_URL);
+            // await faceapi.loadTinyFaceDetectorModel(MODEL_URL);
+
+            canvas = document.getElementById('overlay');
+            videoEl = document.getElementById('inputVideo');
+
+            // navigator.getUserMedia(
+            //     { video: {} },
+            //     stream => videoEl.srcObject = stream,
+            //     err => console.error(err)
+            // )
+
+            setInterval(() => updateLocation(), 1000);
+        }
+
+        async function onPlay(params) {
+            setInterval(async () => {
+
+                const detections = await faceapi.detectAllFaces(videoEl).withFaceExpressions()
+
+                const displaySize = { width: videoEl.clientWidth, height: videoEl.clientHeight }
+                faceapi.matchDimensions(canvas, displaySize)
+                
+                const overlay = document.getElementById("other-overlay");
+                overlay.innerHTML = "";
+                
+                if(detections.length <= 0)
+                    return;
+
+                console.log(detections);
+                detections.forEach(detection => drawDetection(detection))
+
+            }, 50);
+        }
+
+        function drawDetection(detection) {
+            const box = detection.detection.box;
+            var x = box.x/detection.detection.imageWidth * window.innerWidth;
+            var y = box.y/detection.detection.imageHeight * window.innerHeight;
+            
+            var elem = document.createElement("div");
+            elem.style.position = "absolute";
+            elem.style.border = "2px solid red";
+            elem.style.left = x + "px";
+            elem.style.top = y + "px";
+            elem.style.width = "5px";
+            elem.style.height = "5px";
+            const overlay = document.getElementById("other-overlay");
+            overlay.appendChild(elem);
+        }
+
+        function updateTime(){
+            setInterval(() => {                
+                const time = new Date();
+                const timeString = time.getHours().toString().padStart(2, '0') + ':' +
+                                   time.getMinutes().toString().padStart(2, '0') + ':' +
+                                   time.getSeconds().toString().padStart(2, '0');
+                document.getElementById("time").innerText = timeString;
+            }, 500);
+        }
+
+        function updateLocation(){
+            navigator.geolocation.getCurrentPosition((pos) => {
+                const location = {
+                    lat: pos.coords.latitude,
+                    lng: pos.coords.longitude
+                };
+
+                heading = pos.coords?.heading ?? null;
+                altitude = pos.coords?.altitude ?? null;
+                speed = pos.coords?.speed ?? null;
+
+                // map.setCenter(location);
+                // marker.setPosition(location);
+
+                document.getElementById("heading").innerText = "Heading: " + (heading?.toFixed(2) ?? "N/A");
+                document.getElementById("altitude").innerText = "Altitude: " + (altitude !== null ? altitude.toFixed(2) + " m" : "N/A");
+                document.getElementById("speed").innerText = "Speed: " + (speed !== null ? speed.toFixed(2) + " m/s" : "N/A");
+            });
+        }
+
+        let map;
+        let marker;
+        let heading;
+        let altitude;
+        let speed;
+
+        function initMap() {
+            // map = new google.maps.Map(document.getElementById("minimap"), {
+            //     location: { lat: 37.7749, lng: -122.4194 }, // default to San Francisco
+            //     zoom: 14,
+
+            //     disableDefaultUI: true,      // clean minimap look
+            //     gestureHandling: "none",     // disable interaction
+            //     zoomControl: false,
+            //     streetViewControl: false,
+            //     mapTypeControl: false,
+            //     fullscreenControl: false
+            // });
+
+            // marker = new google.maps.Marker({
+            //     position: { lat: 37.7749, lng: -122.4194 },
+            //     map: map,
+            // });
+
+            setInterval(() => updateLocation(), 1000);
+        }
+    
+        function toggleOptions(){
+            const options = document.getElementById("options");
+            if(options.style.display != "none"){
+                options.style.display = "none";
+                options.style.opacity = "0";
+            } else {
+                options.style.display = "block";
+                options.style.opacity = "1";
+            }
+        }
+
+        function zoomPlus(){
+            container = document.getElementById("container");
+            container.style.transform = "scale(1.1)";
+        }
+
+        function zoomMin(){
+            container = document.getElementById("container");
+            container.style.transform = "scale(0.9)";
+        }
+
+        function webFrameUrlUpdated(){
+            const webFrame = document.getElementById("web-frame");
+            const webUrl = document.getElementById("web-url").value;
+            const iframe = webFrame.getElementsByTagName("iframe")[0];
+            iframe.src = webUrl;
+        }
+    </script>
+</head>
+<body style="margin: 0; overflow: clip; background-color: black;">
+    <div id="container" style="position: relative; width: 100vw; height: 100vh;">
+        <button onclick="toggleOptions()" style="position: absolute; top: 10px; right: 10px;">X</button>
+        <div id="options" style="position: absolute; top: 30px; right: 10px; background-color: rgba(0,0,0,0.5); color: white; padding: 10px;">
+            <label onclick="zoomPlus()">+</label><br/>
+            <label onclick="zoomMin()">-</label><br/>
+            <label><br/>
+        </div>
+        <div id="web-frame" style="position: absolute; width: 100px; height: 100px; overflow: hidden; display: flex; flex-direction: column;">
+            <input type="text" id="web-url" oninput="webFrameUrlUpdated()" value="https://www.youtube.com/" style="width: 100px;"/>
+            <iframe src="https://www.youtube.com/" style="flex: 1; border: none;">
+
+            </iframe>
+        </div>
+        <div id="time" style="color: red; position: absolute; top: 10px; left: 10px; font-family: consolas;"></div>
+        <div id="heading" style="color: red; position: absolute; bottom: 300px; right: 20px; font-family: consolas;">Heading: 123</div>
+        <div id="speed" style="color: red; position: absolute; bottom: 280px; right: 20px; font-family: consolas;">Speed: 1234</div>
+        <div id="altitude" style="color: red; position: absolute; bottom: 260px; right: 20px; font-family: consolas;">Altitude: 12345</div>
+        <div style="display: none;" id="minimap"></div>
+    </div>
+    <div>
+        <video id="inputVideo" onplay="onPlay(this)" style="position: absolute; opacity: 0; width: 1080px; height: auto;" autoplay muted></video>
+        <canvas id="overlay" style="position: absolute; width: 100vw; height: 100vh; background-color: transparent;">
+        </canvas>
+    </div>
+    <div id="other-overlay" style="position: relative; width: 100vw; height: 100vh;">
+    </div>
+</body>
