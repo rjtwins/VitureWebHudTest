@@ -143,7 +143,14 @@
             map = L.map('minimap').setView([37.5665, 126.9780], 13); // Seoul
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; OpenStreetMap contributors',
-                maxZoom: 19
+                maxZoom: 20,
+                zoomControl: false,
+                dragging: false,
+                scrollWheelZoom: false,
+                doubleClickZoom: false,
+                boxZoom: false,
+                keyboard: false,
+                touchZoom: false
             }).addTo(map);
 
             marker = L.marker([37.5665, 126.9780]).addTo(map);
