@@ -141,7 +141,7 @@
 
         function initMap() {
             map = L.map('minimap', {
-                maxZoom: 10,
+                zoom: 25,
                 zoomControl: false,
                 dragging: false,
                 scrollWheelZoom: false,
@@ -156,22 +156,10 @@
             }).addTo(map);
 
             marker = L.marker([37.5665, 126.9780]);
-            marker.setIcon(L.icon({
-                iconSize:[5,5]
-            }));
+            const icon = marker.getIcon();
+            icon.iconSize = [5,5];
             marker.addTo(map);
             updateLocation();
-        }
-    
-        function toggleOptions(){
-            const options = document.getElementById("options");
-            if(options.style.display != "none"){
-                options.style.display = "none";
-                options.style.opacity = "0";
-            } else {
-                options.style.display = "block";
-                options.style.opacity = "1";
-            }
         }
 
         addEventListener("keydown", (event) => 
@@ -182,8 +170,8 @@
                 zoomMin();
         });
 
-        let currentVW = 100;
-        let currentVH = 100;
+        let currentVW = 65;
+        let currentVH = 65;
         function zoomPlus(){
             container = document.getElementById("container");
             currentVW += 1;
@@ -212,14 +200,9 @@
     font-size: x-large;
     overflow: hidden;
     ">
-    <div id="container" style="position: relative; width: 100vw; height: 100vh;">
+    <div id="container" style="position: relative; width: 65vw; height: 65vh;">
         <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: red;">
             +
-        </div>
-        <button onclick="toggleOptions()" style="position: absolute; top: 10px; right: 10px;">X</button>
-        <div id="options" style="position: absolute; top: 30px; right: 10px; background-color: rgba(0,0,0,0.5); color: white; padding: 10px;">
-            <label onclick="zoomPlus()">+</label><br/>
-            <label onclick="zoomMin()">-</label><br/>
         </div>
         <div id="time" style="color: red; position: absolute; top: 10px; left: 10px;"></div>
         <div id="heading" style="color: red; position: absolute; bottom: 300px; right: 20px;">Heading: 123</div>
