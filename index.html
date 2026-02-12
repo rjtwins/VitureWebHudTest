@@ -155,7 +155,11 @@
                 attribution: '&copy; OpenStreetMap contributors',
             }).addTo(map);
 
-            marker = L.marker([37.5665, 126.9780]).addTo(map);
+            marker = L.marker([37.5665, 126.9780]);
+            marker.setIcon(L.icon({
+                iconSize:[5,5]
+            }));
+            marker.addTo(map);
             updateLocation();
         }
     
