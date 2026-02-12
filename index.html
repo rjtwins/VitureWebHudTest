@@ -143,7 +143,7 @@
             map = L.map('minimap').setView([37.5665, 126.9780], 13); // Seoul
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; OpenStreetMap contributors',
-                maxZoom: 20,
+                maxZoom: 10,
                 zoomControl: false,
                 dragging: false,
                 scrollWheelZoom: false,
@@ -168,14 +168,22 @@
             }
         }
 
+        let currentVW = 100;
+        let currentVH = 100;
         function zoomPlus(){
             container = document.getElementById("container");
-            container.style.transform = "scale(1.1)";
+            currentVW += 1;
+            currentVH += 1;
+            container.style.width = currentVW + "vw";
+            container.style.height = currentVH + "vh";
         }
 
         function zoomMin(){
             container = document.getElementById("container");
-            container.style.transform = "scale(0.9)";
+            currentVW -= 1;
+            currentVH -= 1;
+            container.style.width = currentVW + "vw";
+            container.style.height = currentVH + "vh";
         }
     </script>
 </head>
