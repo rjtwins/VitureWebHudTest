@@ -59,15 +59,15 @@
         });
 
         async function start(){
-            console.log(faceapi.nets)
+            // console.log(faceapi.nets)
 
-            await faceapi.loadFaceExpressionModel(MODEL_URL);
-            await faceapi.loadFaceLandmarkModel(MODEL_URL);
-            await faceapi.loadFaceLandmarkTinyModel(MODEL_URL);
-            await faceapi.loadFaceRecognitionModel(MODEL_URL);
-            await faceapi.loadMtcnnModel(MODEL_URL);
-            await faceapi.loadSsdMobilenetv1Model(MODEL_URL);
-            await faceapi.loadTinyFaceDetectorModel(MODEL_URL);
+            // await faceapi.loadFaceExpressionModel(MODEL_URL);
+            // await faceapi.loadFaceLandmarkModel(MODEL_URL);
+            // await faceapi.loadFaceLandmarkTinyModel(MODEL_URL);
+            // await faceapi.loadFaceRecognitionModel(MODEL_URL);
+            // await faceapi.loadMtcnnModel(MODEL_URL);
+            // await faceapi.loadSsdMobilenetv1Model(MODEL_URL);
+            // await faceapi.loadTinyFaceDetectorModel(MODEL_URL);
 
             canvas = document.getElementById('overlay');
             videoEl = document.getElementById('inputVideo');
@@ -211,7 +211,7 @@
         <div id="minimap"></div>
     </div>
     <div>
-        <video id="inputVideo" onplay="onPlay(this)" style="position: absolute; opacity: 0; width: 1080px; height: auto;" autoplay muted></video>
+        <!-- <video id="inputVideo" onplay="onPlay(this)" style="position: absolute; opacity: 0; width: 1080px; height: auto;" autoplay muted></video> -->
         <canvas id="overlay" style="position: absolute; width: 100vw; height: 100vh; background-color: transparent;">
         </canvas>
     </div>
