@@ -82,23 +82,23 @@
         }
 
         async function onPlay(params) {
-            setInterval(async () => {
+            // setInterval(async () => {
 
-                const detections = await faceapi.detectAllFaces(videoEl).withFaceExpressions()
+            //     const detections = await faceapi.detectAllFaces(videoEl).withFaceExpressions()
 
-                const displaySize = { width: videoEl.clientWidth, height: videoEl.clientHeight }
-                faceapi.matchDimensions(canvas, displaySize)
+            //     const displaySize = { width: videoEl.clientWidth, height: videoEl.clientHeight }
+            //     faceapi.matchDimensions(canvas, displaySize)
                 
-                const overlay = document.getElementById("other-overlay");
-                overlay.innerHTML = "";
+            //     const overlay = document.getElementById("other-overlay");
+            //     overlay.innerHTML = "";
                 
-                if(detections.length <= 0)
-                    return;
+            //     if(detections.length <= 0)
+            //         return;
 
-                console.log(detections);
-                detections.forEach(detection => drawDetection(detection))
+            //     console.log(detections);
+            //     detections.forEach(detection => drawDetection(detection))
 
-            }, 50);
+            // }, 50);
         }
 
         function drawDetection(detection) {
@@ -211,7 +211,7 @@
         <div id="minimap"></div>
     </div>
     <div>
-        <!-- <video id="inputVideo" onplay="onPlay(this)" style="position: absolute; opacity: 0; width: 1080px; height: auto;" autoplay muted></video> -->
+        <video id="inputVideo" onplay="onPlay(this)" style="position: absolute; opacity: 0; width: 1080px; height: auto;" autoplay muted></video>
         <canvas id="overlay" style="position: absolute; width: 100vw; height: 100vh; background-color: transparent;">
         </canvas>
     </div>
