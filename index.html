@@ -18,8 +18,11 @@
     </style>
     <script src="https://code.jquery.com/jquery-4.0.0.min.js" integrity="sha256-OaVG6prZf4v69dPg6PhVattBXkcOWQB62pdZ3ORyrao=" crossorigin="anonymous"></script>
     <script src="face-api.js"></script>
-    <script async
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA8jaLVHD7YmvXLttNOiQCd-xFbI8esg4w&callback=initMap">
+    <!-- Leaflet JS -->
+    <script
+        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-o9N1j7kP6H0vF+QZ2m30IZHuZOKhHvJ3C2YkS0Fh0Xk="
+        crossorigin="">
     </script>
     <script>
         let videoEl;
@@ -28,7 +31,8 @@
         const MODEL_URL = '/models';
 
         $(document).ready(function() {
-            start();
+            startCamera();
+            initMap();
             updateTime();
         });
 
@@ -42,7 +46,7 @@
             console.log(event);
         });
 
-        async function start(){
+        async function startCamera(){
             // console.log(faceapi.nets)
 
             // await faceapi.loadFaceExpressionModel(MODEL_URL);
@@ -112,7 +116,7 @@
         }
 
         function updateLocation(){
-            navigator.geolocation.getCurrentPosition((pos) => {
+            navigator.geolocation.watchPosition((pos) => {
                 const location = {
                     lat: pos.coords.latitude,
                     lng: pos.coords.longitude
@@ -122,8 +126,8 @@
                 altitude = pos.coords?.altitude ?? null;
                 speed = pos.coords?.speed ?? null;
 
-                // map.setCenter(location);
-                // marker.setPosition(location);
+                map.setView([location.lat, location.lng], 15);
+                marker.setLatLng([location.lat, location.lng]);
 
                 document.getElementById("heading").innerText = "Heading: " + (heading?.toFixed(2) ?? "N/A");
                 document.getElementById("altitude").innerText = "Altitude: " + (altitude !== null ? altitude.toFixed(2) + " m" : "N/A");
@@ -138,24 +142,14 @@
         let speed;
 
         function initMap() {
-            map = new google.maps.Map(document.getElementById("minimap"), {
-                location: { lat: 37.7749, lng: -122.4194 }, // default to San Francisco
-                zoom: 14,
+            map = L.map('map').setView([37.5665, 126.9780], 13); // Seoul
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors',
+                maxZoom: 19
+            }).addTo(map);
 
-                disableDefaultUI: true,      // clean minimap look
-                gestureHandling: "none",     // disable interaction
-                zoomControl: false,
-                streetViewControl: false,
-                mapTypeControl: false,
-                fullscreenControl: false
-            });
-
-            marker = new google.maps.Marker({
-                position: { lat: 37.7749, lng: -122.4194 },
-                map: map,
-            });
-
-            setInterval(() => updateLocation(), 1000);
+            marker = L.marker([37.5665, 126.9780]).addTo(map);
+            updateLocation();
         }
     
         function toggleOptions(){
