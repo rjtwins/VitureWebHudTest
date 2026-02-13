@@ -1,5 +1,5 @@
 let videoEl;
-let canvas;
+let overlay;
 
 const MODEL_URL = '/VitureWebHudTest/models';
 
@@ -31,6 +31,7 @@ async function startCamera(){
     await faceapi.loadTinyFaceDetectorModel(MODEL_URL);
 
     videoEl = document.getElementById('inputVideo');
+    overlay = document.getElementById('other-overlay');
 
     navigator.getUserMedia(
         { video: {} },
@@ -42,14 +43,15 @@ async function startCamera(){
 }
 
 async function onPlay(params) {
+    updateVideoTransform();
+    
     setInterval(async () => {
 
         const detections = await faceapi.detectAllFaces(videoEl).withFaceExpressions()
 
         const displaySize = { width: videoEl.clientWidth, height: videoEl.clientHeight }
-        const overlay = document.getElementById("other-overlay");
 
-        faceapi.matchDimensions(overlay, displaySize)
+        //faceapi.matchDimensions(overlay, displaySize)
         
         overlay.innerHTML = "";
         
@@ -62,19 +64,82 @@ async function onPlay(params) {
     }, 50);
 }
 
+const cameraFOV = 70 * Math.PI / 180;
+const cameraAspect = 4/3;
+const cameraVFov = computeVFOV(70, cameraAspect);
+
+const displayFOV = 52 * Math.PI / 180;
+const screenAspect = 16/10;
+const displayVFOV = computeVFOV(52, screenAspect);
+
+const imageWidth = 640;
+const imageHeight = 480;
+
+function computeVFOV(hFOV_degrees, aspectRatio) {
+
+    const hFOV = hFOV_degrees * Math.PI / 180; // convert to radians
+
+    const vFOV =
+        2 * Math.atan(
+            Math.tan(hFOV / 2) / aspectRatio
+        );
+
+    return vFOV * 180 / Math.PI; // return in degrees
+}
+
+function cameraPixelToScreen(xPixel, overlayWidth) {
+
+    // 1️⃣ Normalize pixel to -1..1
+    const nx = (xPixel / imageWidth - 0.5) * 2;
+
+    // 2️⃣ Convert to camera angle
+    const angle = nx * (cameraFOV / 2);
+
+    // 3️⃣ Project into display space
+    const projected = Math.tan(angle) / Math.tan(displayFOV / 2);
+
+    // 4️⃣ Convert to screen pixels
+    const screenX = (projected * 0.5 + 0.5) * overlayWidth;
+
+    return screenX;
+}
+
+function cameraPixelYToScreen(yPixel, overlayHeight) {
+
+    // Normalize to -1..1
+    const ny = (yPixel / imageHeight - 0.5) * 2;
+
+    // Convert to camera angle
+    const angle = ny * (cameraVFOV / 2);
+
+    // Project into display space
+    const projected = Math.tan(angle) / Math.tan(displayVFOV / 2);
+
+    // Convert to pixels
+    const screenY = (projected * 0.5 + 0.5) * overlayHeight;
+
+    return screenY;
+}
+
 function drawDetection(detection) {
     const box = detection.detection.box;
-    var x = box.x/detection.detection.imageWidth * window.innerWidth;
-    var y = box.y/detection.detection.imageHeight * window.innerHeight;
-    
+    const rect = overlay.getBoundingClientRect();
+
+    const screenX = cameraPixelToScreen(box.x, rect.width);
+    const screenX2 = cameraPixelToScreen(box.x + box.width, rect.width);
+    const boxWidth = screenX2 - screenX;
+
+    const screenY = cameraPixelToScreen(box.y, rect.height);
+    const screenY2 = cameraPixelToScreen(box.y + box.height, rect.height);
+    const boxHeight = screenY2 - screenY;
+
     var elem = document.createElement("div");
     elem.style.position = "absolute";
-    elem.style.border = "2px solid red";
-    elem.style.left = x + "px";
-    elem.style.top = y + "px";
-    elem.style.width = "5px";
-    elem.style.height = "5px";
-    const overlay = document.getElementById("other-overlay");
+    elem.style.border = "3px solid red";
+    elem.style.left = screenX + "px";
+    elem.style.top = screenY + "px";
+    elem.style.width = boxWidth + "px";
+    elem.style.height = boxHeight + "px";
     overlay.appendChild(elem);
 }
 
@@ -141,7 +206,65 @@ addEventListener("keydown", (event) =>
         zoomPlus();
     if(event.key == "-")
         zoomMin();
+
+    if(event.key == "/")
+        videoEl.style.opacity = videoEl.style.opacity == 1 ? 0 : 1;
+
+    if(event.key == "9")
+        videoZoomPlus();
+    if(event.key == "7")
+        videoZoomMin();
+
+    if(event.key == "4")
+        videoMoveLeft();
+    if(event.key == "6")
+        videoMoveRight();
+    
+    if(event.key == "8")
+        videoMoveUp();
+    if(event.key == "2")
+        videoMoveDown();
 });
+
+
+let videoScale = 2.7;
+let videoPosX = 120;
+let videoPosY = -374;
+function videoZoomPlus(){
+    videoScale += 0.1;
+    updateVideoTransform();
+}
+
+function videoZoomMin(){
+    videoScale -= 0.1;
+    updateVideoTransform();
+}
+
+function videoMoveRight() {
+    videoPosX += 1;
+    updateVideoTransform()
+}
+
+function videoMoveLeft() {
+    videoPosX -= 1;
+    updateVideoTransform()
+}
+
+function videoMoveUp() {
+    videoPosY += 1;
+    updateVideoTransform()
+}
+
+function videoMoveDown() {
+    videoPosY -= 1;
+    updateVideoTransform()
+}
+
+function updateVideoTransform() {
+    videoEl.style.transform =
+        `translate(-50%, -50%) translate(${videoPosX}px, ${videoPosY}px) scale(${videoScale})`;
+}
+
 
 let currentVW = 65;
 let currentVH = 65;
