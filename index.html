@@ -141,7 +141,7 @@
 
         function initMap() {
             map = L.map('minimap', {
-                zoom: 25,
+                zoom: 35,
                 zoomControl: false,
                 dragging: false,
                 scrollWheelZoom: false,
@@ -150,7 +150,7 @@
                 keyboard: false,
                 touchZoom: false
             }).setView([37.5665, 126.9780], 13); // Seoul
-            
+             
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; OpenStreetMap contributors',
             }).addTo(map);
