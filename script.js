@@ -30,7 +30,6 @@ async function startCamera(){
     await faceapi.loadSsdMobilenetv1Model(MODEL_URL);
     await faceapi.loadTinyFaceDetectorModel(MODEL_URL);
 
-    canvas = document.getElementById('overlay');
     videoEl = document.getElementById('inputVideo');
 
     navigator.getUserMedia(
@@ -43,23 +42,24 @@ async function startCamera(){
 }
 
 async function onPlay(params) {
-    // setInterval(async () => {
+    setInterval(async () => {
 
-    //     const detections = await faceapi.detectAllFaces(videoEl).withFaceExpressions()
+        const detections = await faceapi.detectAllFaces(videoEl).withFaceExpressions()
 
-    //     const displaySize = { width: videoEl.clientWidth, height: videoEl.clientHeight }
-    //     faceapi.matchDimensions(canvas, displaySize)
+        const displaySize = { width: videoEl.clientWidth, height: videoEl.clientHeight }
+        const overlay = document.getElementById("other-overlay");
+
+        faceapi.matchDimensions(overlay, displaySize)
         
-    //     const overlay = document.getElementById("other-overlay");
-    //     overlay.innerHTML = "";
+        overlay.innerHTML = "";
         
-    //     if(detections.length <= 0)
-    //         return;
+        if(detections.length <= 0)
+            return;
 
-    //     console.log(detections);
-    //     detections.forEach(detection => drawDetection(detection))
+        //console.log(detections);
+        detections.forEach(detection => drawDetection(detection))
 
-    // }, 50);
+    }, 50);
 }
 
 function drawDetection(detection) {
@@ -126,9 +126,7 @@ function initMap() {
         touchZoom: false
     }).setView([37.5665, 126.9780], 13); // Seoul
         
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors',
-    }).addTo(map);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
     marker = L.marker([37.5665, 126.9780]);
     const icon = marker.getIcon();
